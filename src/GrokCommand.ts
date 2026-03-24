@@ -14,17 +14,21 @@ export default {
 
         await interaction.deferReply();
         
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: [
-                {
-                    role: "user",
-                    parts: [{ text: "grok is this true?: " + interaction.targetMessage.content + " (this should be below 1500 characters)"  }]
-                }
-            ],
-            
+        try {
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: "grok is this true?: " + interaction.targetMessage.content + " (You are in no way allowed to go above 1500 characters)"  }]
+                    }
+                ],
             });
-
-        await interaction.editReply({ content: response.text });
+            
+            await interaction.editReply({ content: response.text });
+        } catch (error) {
+            console.log("Error generating content:", error);
+            await interaction.editReply({ content: "grok couldn't figure it out, sowy." });
+        }
     }
 }
