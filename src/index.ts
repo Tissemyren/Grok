@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
+import { readdir, stat } from "node:fs/promises";
+import { join, resolve } from 'node:path';
 
 declare module "discord.js" {
     interface Client {
@@ -16,22 +18,55 @@ const client = new Client({
         GatewayIntentBits.DirectMessages,
     ]
 })
+
+async function getFiles(dir: string) {
+    const dirents = await readdir(dir, { withFileTypes: true });
+    const files: any = await Promise.all(
+        dirents.map((dirent) => {
+            const res = resolve(dir, dirent.name);
+            return dirent.isDirectory() ? getFiles(res) : res;
+        })
+    );
+    return Array.prototype.concat(...files);
+}
+
 client.commands = new Collection();
 client.buttons = new Collection();
 
 (async () => {
     const commands: any = [];
-    const grokCommand = (await import("./GrokCommand.ts")).default;
+    const commandFiles = await getFiles(join(__dirname, "./commands"));
+    for (const path of commandFiles) {
+        const stats = await stat(path);
+        if (stats.isDirectory()) continue;
+        const command = (await import(path)).default;
+        if (command === undefined) continue;
+        if (command.enabled === false) continue;
+        client.commands.set(command.data.name, command);
+        if (command.aliases) {
+            for (const alias of command.aliases) {
+                const aliasCommand = command.data.toJSON();
+                aliasCommand.name = alias;
+                client.commands.set(alias, command);
+                commands.push(aliasCommand);
+            }
+        }
+        commands.push(command.data.toJSON());
+    }
 
-    client.commands.set(grokCommand.data.name, grokCommand);
-
-    commands.push(grokCommand.data.toJSON());
-
-    const interactionEvent = (await import("./interactionCreateUser.ts")).default;
-
-    client.on(Events.InteractionCreate, async (interaction) => {
-        await interactionEvent.execute(interaction);
-    });
+    const eventFiles = await getFiles(join(__dirname, "./events"));
+    for (const path of eventFiles) {
+        const stats = await stat(join(path));
+        if (stats.isDirectory()) continue;
+        const event = (await import(path)).default;
+        if (event === undefined) continue;
+        if (event.enabled === false) continue;
+        if (event.once) {
+            client.once(event.name, (...args) => event.execute(...args));
+        } else {
+            client.on(event.name, (...args) => event.execute(...args));
+        }
+    }
     
     client.on(Events.ClientReady, async () => {
         await client.application?.commands.set(commands);

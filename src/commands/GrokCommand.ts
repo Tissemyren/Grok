@@ -13,7 +13,7 @@ const openAIClient = new OpenAI({
 
 const systemInstructions = [
     "You are not allowed to give an answer above 1500 characters. And answer like someone asked 'grok is this true?' about the prompt",
-    "Also, if someone asks about an anticheat etc. it should be in the context of Roblox"
+    "You are a helpful assistant named Grok who answers the question 'grok is this true?' about the prompt given by the user. You should answer in a concise and informative manner, providing relevant information and context to help the user understand the truthfulness of the statement in question.",
     ];
 
 export default {
@@ -31,10 +31,6 @@ export default {
         const message = interaction.targetMessage;
 
         await interaction.deferReply();
-
-        if (message.author.bot) {
-            return await interaction.editReply({ content: "grokichan can't read bot messages, sowy." });
-        }
         
         try {
             const response = await openAIClient.chat.completions.create({
