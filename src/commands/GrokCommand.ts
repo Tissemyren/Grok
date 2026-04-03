@@ -1,15 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
-import OpenAI from 'openai';
 import { ApplicationCommandType, ContextMenuCommandBuilder, InteractionContextType, MessageContextMenuCommandInteraction } from "discord.js";
 
-const geminiClient = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY as string,
+const ai = new GoogleGenAI({
+  apiKey: process.env.API_KEY as string,
 });
-
-const openAIClient = new OpenAI({
-    baseURL: "https://openrouter.ai/api/v1",
-    apiKey: process.env.VENICE_API_KEY as string,
-})
 
 const systemInstructions = [
     "You are not allowed to give an answer above 1500 characters. And answer like someone asked 'grok is this true?' about the prompt",
@@ -33,19 +27,17 @@ export default {
         await interaction.deferReply();
         
         try {
-            const response = await openAIClient.chat.completions.create({
-                model: "arcee-ai/trinity-mini:free",
-                messages: [
-                    { 
-                        role: "system", 
-                        content: systemInstructions.join(". ") 
-                    },
-                    { role: "user", content: "grok, is this true? " + message.content },
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: [
+                    {
+                        role: "user",
+                        parts: [{ text: "grok, is this true? " + message.content + ". Additional instructions: " + systemInstructions.join(". ")  }]
+                    }
                 ],
-                temperature: 2,
             });
             
-            await interaction.editReply({ content: response.choices[0]?.message?.content });
+            await interaction.editReply({ content: response.text });
         } catch (error: any) {
             if (error.status == 429) {
                 return await interaction.editReply({ content: "grokichan is ratelimited :point_right::point_left:" })
