@@ -10,6 +10,8 @@ import {
     TextInputStyle }
 from "discord.js";
 
+const tempData = import("../util/tempUserData");
+
 export default {
     data: new ContextMenuCommandBuilder()
         .setName("grok is this true (context)")
@@ -41,5 +43,7 @@ export default {
         modal.addLabelComponents(contextOptionLabel);
 
         await interaction.showModal(modal);
+
+        (await tempData).default.storeContextForUser(interaction.user.id, interaction.targetMessage.content);
     }
 }
