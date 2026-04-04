@@ -1,2 +1,2 @@
 .env
-.traineddata
+*.traineddata
