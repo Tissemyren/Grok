@@ -10,7 +10,7 @@ import {
     TextInputStyle }
 from "discord.js";
 
-const tempData = import("../util/tempUserData");
+const tempData = import("../util/tempUserData.js");
 
 export default {
     data: new ContextMenuCommandBuilder()

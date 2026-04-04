@@ -2,9 +2,10 @@
   "name": "grok",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "nodemon -r dotenv/config --exec ts-node src/index.ts",
+    "dev": "nodemon --exec tsx src/index.ts",
     "build": "tsc",
     "start": "node -r ./dist/index.js"
   },
@@ -17,6 +18,10 @@
     "discord.js": "^14.25.1",
     "dotenv": "^17.3.1",
     "fs": "^0.0.1-security",
+    "google-translate-api-next": "^0.1.0",
+    "scribe.js-ocr": "^0.10.1",
+    "tesseract.js": "^7.0.0",
+    "tsx": "^4.21.0",
     "zod": "^4.3.6"
   }
 }

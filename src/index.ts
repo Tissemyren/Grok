@@ -1,7 +1,11 @@
 import 'dotenv/config';
 import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
 import { readdir, stat } from "node:fs/promises";
-import { join, resolve } from 'node:path';
+import { join, resolve, dirname } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename)
 
 declare module "discord.js" {
     interface Client {
@@ -39,10 +43,15 @@ client.buttons = new Collection();
     for (const path of commandFiles) {
         const stats = await stat(path);
         if (stats.isDirectory()) continue;
-        const command = (await import(path)).default;
+
+        const commandModule = await import(pathToFileURL(path).href);
+        const command = commandModule.default;
+
         if (command === undefined) continue;
         if (command.enabled === false) continue;
+
         client.commands.set(command.data.name, command);
+
         if (command.aliases) {
             for (const alias of command.aliases) {
                 const aliasCommand = command.data.toJSON();
@@ -58,7 +67,10 @@ client.buttons = new Collection();
     for (const path of eventFiles) {
         const stats = await stat(join(path));
         if (stats.isDirectory()) continue;
-        const event = (await import(path)).default;
+
+        const eventModule = await import(pathToFileURL(path).href);
+        const event = eventModule.default;
+
         if (event === undefined) continue;
         if (event.enabled === false) continue;
         if (event.once) {

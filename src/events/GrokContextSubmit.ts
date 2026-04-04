@@ -1,7 +1,7 @@
 import { Events, ModalSubmitInteraction } from "discord.js";
 import { GoogleGenAI } from "@google/genai";
 
-const tempData = import("../util/tempUserData");
+import * as tempData from '../util/tempUserData.js';
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY as string,
@@ -20,7 +20,7 @@ export default {
         if (interaction.customId !== "grok-context") return;
 
         await interaction.deferReply(); 
-        const message = (await tempData).default.getContextForUser(interaction.user.id);
+        const message = tempData.getContextForUser(interaction.user.id);
         const context = interaction.fields.getTextInputValue("context-input") as string;
 
         try {
