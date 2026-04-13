@@ -48,6 +48,8 @@ export default {
         } catch (error: any) {
             if (error.status == 429) {
                 return await interaction.editReply({ content: "Grok is ratelimited. Try again in a minute." })
+            } else if (error.status == 503) {
+                return await interaction.editReply({ content: "The API service is unavailable atm. likely due to high demand."})
             }
 
             console.log("Error generating content:", error);
