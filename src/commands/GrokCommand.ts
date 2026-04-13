@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { ApplicationCommandType, ContextMenuCommandBuilder, InteractionContextType, MessageContextMenuCommandInteraction, MessageFlags } from "discord.js";
+import { database } from "src/index.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY as string,
@@ -24,6 +25,16 @@ export default {
 
         const message = interaction.targetMessage;
 
+        var context = "";
+
+        const results = await database.query(`
+            SELECT * FROM context WHERE userId = ?
+        `, [interaction.user.id])
+
+        for (const result of results) {
+            context = context + result.value
+        }
+
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         
         try {
@@ -32,7 +43,7 @@ export default {
                 contents: [
                     {
                         role: "user",
-                        parts: [{ text: "grok, is this true? " + message.content + ". Additional instructions: " + systemInstructions.join(". ")  }]
+                        parts: [{ text: "grok, is this true? " + message.content + ". Additional instructions: " + systemInstructions.join(". ") + ". The user might also have given further context to use in the prompt: " + context }]
                     }
                 ],
             });

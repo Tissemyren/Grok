@@ -3,6 +3,7 @@ import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
 import { readdir, stat } from "node:fs/promises";
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { Database } from './util/Database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename)
@@ -89,4 +90,6 @@ client.buttons = new Collection();
     client.login(process.env.BOT_TOKEN as string);   
 })();
 
-export { client };
+const database = new Database();
+
+export { client, database };

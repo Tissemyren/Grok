@@ -2,6 +2,7 @@ import { Events, MessageFlags, ModalSubmitInteraction } from "discord.js";
 import { GoogleGenAI } from "@google/genai";
 
 import * as tempData from '../util/tempUserData.js';
+import { database } from "src/index.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY as string,
@@ -22,7 +23,15 @@ export default {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         
         const message = tempData.getContextForUser(interaction.user.id);
-        const context = interaction.fields.getTextInputValue("context-input") as string;
+        var context = interaction.fields.getTextInputValue("context-input") as string;
+
+        const results = await database.query(`
+            SELECT * FROM context WHERE userId = ?
+        `, [interaction.user.id])
+
+        for (const result of results) {
+            context = context + result.value
+        }
 
         try {
             const response = await ai.models.generateContent({

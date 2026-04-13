@@ -26,6 +26,10 @@ export default {
 
         const modal = new ModalBuilder().setCustomId('grok-context').setTitle('Provide context for Grok');
 
+        const description = new TextDisplayBuilder()
+            .setId(1)
+            .setContent("Add context for it to use for this prompt.")
+
         const contextOption = new TextInputBuilder()
             .setCustomId('context-input')
             .setStyle(TextInputStyle.Paragraph)
@@ -36,10 +40,11 @@ export default {
             .setTextInputComponent(contextOption)
 
         const display = new TextDisplayBuilder()
-            .setId(1)
+            .setId(2)
             .setContent(interaction.targetMessage.content)
         
         modal.addTextDisplayComponents(display);
+        modal.addTextDisplayComponents(description);
         modal.addLabelComponents(contextOptionLabel);
 
         await interaction.showModal(modal);

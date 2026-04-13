@@ -19,6 +19,7 @@
     "dotenv": "^17.3.1",
     "fs": "^0.0.1-security",
     "google-translate-api-next": "^0.1.0",
+    "mariadb": "^3.5.2",
     "scribe.js-ocr": "^0.10.1",
     "tesseract.js": "^7.0.0",
     "tsx": "^4.21.0",
