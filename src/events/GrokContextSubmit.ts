@@ -1,4 +1,4 @@
-import { Events, ModalSubmitInteraction } from "discord.js";
+import { Events, MessageFlags, ModalSubmitInteraction } from "discord.js";
 import { GoogleGenAI } from "@google/genai";
 
 import * as tempData from '../util/tempUserData.js';
@@ -19,7 +19,8 @@ export default {
         if (!interaction.isModalSubmit()) return;
         if (interaction.customId !== "grok-context") return;
 
-        await interaction.deferReply(); 
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+        
         const message = tempData.getContextForUser(interaction.user.id);
         const context = interaction.fields.getTextInputValue("context-input") as string;
 
@@ -37,11 +38,11 @@ export default {
             await interaction.editReply({ content: response.text });
         } catch (error: any) {
             if (error.status == 429) {
-                return await interaction.editReply({ content: "grokichan is ratelimited :point_right::point_left:" })
+                return await interaction.editReply({ content: "Grok is ratelimited. Try again in a minute." })
             }
 
             console.log("Error generating content:", error);
-            await interaction.editReply({ content: "grokichan couldn't figure it out, sowy." });
+            await interaction.editReply({ content: "Grok couldn't figure it out." });
         }
     }
 }

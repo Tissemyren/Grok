@@ -10,7 +10,7 @@ import {
     TextInputStyle }
 from "discord.js";
 
-const tempData = import("../util/tempUserData.js");
+import * as tempData from "../util/tempUserData.js";
 
 export default {
     data: new ContextMenuCommandBuilder()
@@ -44,6 +44,6 @@ export default {
 
         await interaction.showModal(modal);
 
-        (await tempData).default.storeContextForUser(interaction.user.id, interaction.targetMessage.content);
+        tempData.storeContextForUser(interaction.user.id, interaction.targetMessage.content);
     }
 }
