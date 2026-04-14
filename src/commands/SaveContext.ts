@@ -1,5 +1,5 @@
 import { ApplicationCommandType, ContextMenuCommandBuilder, InteractionContextType, MessageContextMenuCommandInteraction, MessageFlags } from "discord.js";
-import { database } from "src/index.js";
+import { database } from "../index.js";
 
 export default {
     data: new ContextMenuCommandBuilder()

@@ -2,7 +2,7 @@ import { Events, MessageFlags, ModalSubmitInteraction } from "discord.js";
 import { GoogleGenAI } from "@google/genai";
 
 import * as tempData from '../util/tempUserData.js';
-import { database } from "src/index.js";
+import { database } from "../index.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY as string,

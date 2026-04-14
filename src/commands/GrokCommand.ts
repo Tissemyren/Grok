@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { ApplicationCommandType, ContextMenuCommandBuilder, InteractionContextType, MessageContextMenuCommandInteraction, MessageFlags } from "discord.js";
-import { database } from "src/index.js";
+import { database } from "../index.js";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY as string,
