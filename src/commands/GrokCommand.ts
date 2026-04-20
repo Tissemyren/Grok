@@ -32,7 +32,7 @@ export default {
         `, [interaction.user.id])
 
         for (const result of results) {
-            context = context + result.value
+            context = context + ". " + result.value
         }
 
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -43,17 +43,18 @@ export default {
                 contents: [
                     {
                         role: "user",
-                        parts: [{ text: "grok, is this true? " + message.content + ". Additional instructions: " + systemInstructions.join(". ") + ". The user might also have given further context to use in the prompt: " + context }]
+                        parts: [{ text: "grok, is this true? " + message.content + ". Additional instructions: " + systemInstructions.join(". ") + ". The user might also have given further context to use in the prompt, which should override what you already know: " + context }]
                     }
                 ],
             });
 
-            await interaction.editReply({ content: response.text });
+            await interaction.deleteReply();
+            await interaction.followUp({ content: response.text });
         } catch (error: any) {
             if (error.status == 429) {
                 return await interaction.editReply({ content: "Grok is ratelimited. Try again in a minute." })
             }  else if (error.status == 503) {
-                return await interaction.editReply({ content: "The API service is unavailable atm. likely due to high demand."})
+                return await interaction.editReply({ content: "The service is unavailable due to high demand."})
             }
 
             console.log("Error generating content:", error);
