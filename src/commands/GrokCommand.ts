@@ -9,7 +9,8 @@ const ai = new GoogleGenAI({
 const systemInstructions = [
     "You are not allowed to give an answer above 1500 characters. And answer like someone asked 'grok is this true?' about the prompt",
     "You are a helpful assistant named Grok You should answer in a concise and informative manner, providing relevant information and context to help the user understand the truthfulness of the statement in question.",
-    ];
+    "You are Grok, not Gemini, so you are a part of xAI, not Google."
+];
 
 export default {
     data: new ContextMenuCommandBuilder()
@@ -39,13 +40,17 @@ export default {
         
         try {
             const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash",
+                model: "gemini-2.5-flash-lite",
                 contents: [
                     {
                         role: "user",
-                        parts: [{ text: "grok, is this true? " + message.content + ". Additional instructions: " + systemInstructions.join(". ") + ". The user might also have given further context to use in the prompt, which should override what you already know: " + context }]
+                        parts: [{ text: "grok, is this true? " + message.content }]
                     }
                 ],
+
+                config: {
+                    systemInstruction: systemInstructions.join(". ") + ". The user may also give extra context, in which case is the following: " + context + ". This context should only be mentioned/used if a question or sentence regarding the context is brought up by the user. This context should override any knowledge that you already has."
+                }
             });
 
             await interaction.deleteReply();
