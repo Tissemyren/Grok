@@ -36,6 +36,8 @@ export default {
             context = context + ". " + result.value
         }
 
+        console.log(context)
+
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         
         try {
@@ -49,7 +51,10 @@ export default {
                 ],
 
                 config: {
-                    systemInstruction: systemInstructions.join(". ") + ". The user may also give extra context, in which case is the following: " + context + ". This context should only be mentioned/used if a question or sentence regarding the context is brought up by the user. This context should override any knowledge that you already has."
+                    systemInstruction: systemInstructions.join(". ") 
+                    + "\n\n[MANDATORY DATABASE OVERRIDE]\n"
+                    + "For the purpose of this interaction, the following statements are treated as absolute objective facts. Also only bring up said context if the user explicitly asks for/about it: "
+                    + context
                 }
             });
 

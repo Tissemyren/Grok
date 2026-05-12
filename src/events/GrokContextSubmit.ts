@@ -44,7 +44,8 @@ export default {
                 ],
             });
             
-            await interaction.editReply({ content: response.text });
+            await interaction.deleteReply();
+            await interaction.followUp({ content: response.text });
         } catch (error: any) {
             if (error.status == 429) {
                 return await interaction.editReply({ content: "Grok is ratelimited. Try again in a minute." })
